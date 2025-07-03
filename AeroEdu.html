@@ -1,0 +1,1864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AeroEdu – Learn Aerospace Basics: Interactive aerospace education portal with calculators, flashcards, and AI tools. Ideal for students and enthusiasts.">
+  <meta name="theme-color" content="#1976d2">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%231976d2'/%3E%3Cpath d='M8 32 L56 32 M32 8 L32 56 M16 48 L48 16' stroke='white' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
+  <title>AeroEdu – Learn Aerospace Basics</title>
+  <style>
+    /* Aviation-themed, light blue responsive design */
+    :root {
+      --main-bg: #e6f2fb;
+      --accent: #1976d2;
+      --card-bg: #fff;
+      --border: #b3d1ea;
+      --text: #222;
+      --nav-bg: #f5fbff;
+      --shadow: 0 2px 8px rgba(25, 118, 210, 0.08);
+    }
+    body.dark-theme {
+      --main-bg: #181f2a;
+      --accent: #90caf9;
+      --card-bg: #232b3a;
+      --border: #394867;
+      --text: #e3eaf7;
+      --nav-bg: #232b3a;
+      --shadow: 0 2px 8px rgba(144,202,249,0.08);
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: var(--main-bg);
+      color: var(--text);
+    }
+    header {
+      background: var(--nav-bg);
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem 1rem;
+      flex-wrap: wrap;
+      background: var(--nav-bg);
+      position: relative;
+    }
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      flex: 1 1 auto;
+    }
+    #theme-toggle {
+      position: absolute;
+      right: 1.2rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.3em;
+      color: var(--accent);
+      padding: 0 0.5em;
+      border-radius: 6px;
+      transition: background 0.2s;
+      align-self: center;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    @media (max-width: 700px) {
+      .nav-links { gap: 0.7rem; }
+      #theme-toggle { font-size: 1.1em; padding: 0 0.2em; }
+    }
+    nav a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+      padding: 0.5rem 0.8rem;
+      border-radius: 6px;
+      transition: background 0.2s;
+    }
+    nav a:hover, nav a.active {
+      background: var(--accent);
+      color: #fff;
+    }
+    .container {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    h1, h2, h3 {
+      color: var(--accent);
+      margin-top: 0;
+    }
+    .section {
+      margin-bottom: 2.5rem;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      padding: 1.2rem 1.5rem;
+      margin-bottom: 1.2rem;
+      transition: box-shadow 0.2s;
+    }
+    @media (max-width: 600px) {
+      nav {
+        gap: 0.5rem;
+        font-size: 0.98em;
+      }
+      .container {
+        padding: 0 0.3rem;
+      }
+      .card {
+        padding: 1rem 0.7rem;
+      }
+    }
+    .flashcard {
+      width: 380px;
+      height: 240px;
+      margin: 0 auto;
+      perspective: 900px;
+      margin-bottom: 1.2em;
+      border-radius: 18px;
+      box-shadow: 0 6px 32px rgba(25,118,210,0.13), 0 1.5px 8px rgba(25,118,210,0.08);
+      background: linear-gradient(135deg, #e6f2fb 70%, #b3d1ea 100%);
+      position: relative;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .flashcard-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.6s cubic-bezier(.4,2,.6,1);
+      transform-style: preserve-3d;
+      border-radius: 18px;
+    }
+    .flashcard.flipped .flashcard-inner {
+      transform: rotateY(180deg);
+    }
+    .flashcard-front, .flashcard-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2em;
+      color: #1976d2;
+      padding: 1.2em;
+      text-align: center;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      transition: background 0.2s, color 0.2s;
+    }
+    .flashcard-back {
+      transform: rotateY(180deg);
+      color: #222;
+      background: #e6f2fb;
+      font-size: 1.15em;
+      font-weight: 500;
+    }
+    #flashcard-zone .flashcard-nav {
+      display: flex;
+      justify-content: center;
+      gap: 1.2em;
+      margin-top: 1.1em;
+      margin-bottom: 0.5em;
+    }
+    #flashcard-zone button {
+      background: #1976d2;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.7em 1.5em;
+      font-size: 1.1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, box-shadow 0.2s;
+      box-shadow: 0 2px 8px rgba(25,118,210,0.08);
+    }
+    #flashcard-zone button:hover, #flashcard-zone button:focus {
+      background: #1256a3;
+      box-shadow: 0 4px 16px rgba(25,118,210,0.13);
+    }
+    #flashcard-progress {
+      margin-top: 0.7em;
+      text-align: center;
+      color: #1976d2;
+      font-size: 1.08em;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+    }
+    @media (max-width: 600px) {
+      .flashcard { width: 98vw; height: 160px; }
+      .flashcard-front, .flashcard-back { font-size: 1.1em; padding: 0.5em; }
+      #flashcard-zone .flashcard-nav { gap: 0.5em; }
+      #flashcard-zone button { font-size: 1em; padding: 0.5em 1em; }
+    }
+    #chatbot-window {
+      font-size: 1em;
+      line-height: 1.5;
+    }
+    #chatbot-window .chatbot-user {
+      color: #1976d2;
+      font-weight: 600;
+      margin-bottom: 0.2em;
+    }
+    #chatbot-window .chatbot-bot {
+      color: #222;
+      margin-bottom: 0.7em;
+    }
+    #airfoil-canvas { cursor: crosshair; }
+    #airfoil-preview img { max-width: 120px; max-height: 80px; border-radius: 6px; border:1px solid #b3d1ea; }
+    html { scroll-behavior: smooth; }
+    nav a:focus { outline: 2px solid #1976d2; outline-offset: 2px; }
+    .collapse-btn:focus, #flashcard-zone button:focus, #chatbot-input:focus, #chatbot-form button:focus, #airfoil-clear:focus, #airfoil-upload:focus { outline: 2px solid #1976d2; outline-offset: 2px; }
+    .collapse-btn { background: #e6f2fb; color: #1976d2; border: 1px solid #b3d1ea; border-radius: 6px; padding: 0.4em 1em; font-size: 1em; cursor: pointer; margin-bottom: 0.7em; transition: background 0.2s; }
+    .collapse-btn:hover { background: #d0e6f7; }
+    .collapsible .collapse-content { animation: fadeIn 0.5s; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .card:focus-within, .card:hover { box-shadow: 0 4px 16px rgba(25,118,210,0.13); transform: translateY(-2px) scale(1.01); }
+    #isa-card, #lift-drag-card, #ml-drag-card { margin-bottom: 1.5em; }
+    .help-tip { display:inline-block; background:#1976d2; color:#fff; border-radius:50%; width:1.2em; height:1.2em; text-align:center; font-size:0.9em; line-height:1.2em; cursor:pointer; margin-left:0.3em; }
+    .help-tip[aria-label]:hover:after, .help-tip[aria-label]:focus:after { content: attr(aria-label); position:absolute; background:#fff; color:#1976d2; border:1px solid #b3d1ea; border-radius:6px; padding:0.5em 1em; left:100%; top:0; white-space:nowrap; z-index:10; box-shadow:0 2px 8px rgba(25,118,210,0.08); }
+    footer { background: var(--nav-bg); color: var(--accent); text-align: center; padding: 1.2em 0 0.7em 0; font-size: 1em; border-top: 1px solid var(--border); margin-top: 2em; }
+    footer a { color: #1976d2; text-decoration: underline; margin: 0 0.5em; }
+    footer a:hover { color: #1256a3; }
+    .unit-module { margin-bottom: 2em; }
+    .topic-collapsible { margin-bottom: 1.2em; }
+    .topic-btn {
+      background: #e6f2fb;
+      color: #1976d2;
+      border: 1px solid #b3d1ea;
+      border-radius: 6px;
+      padding: 0.5em 1.2em;
+      font-size: 1.08em;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      text-align: left;
+      margin-bottom: 0.2em;
+      transition: background 0.2s;
+    }
+    .topic-btn:hover, .topic-btn:focus { background: #d0e6f7; }
+    .topic-content {
+      display: none;
+      background: #f5fbff;
+      border-radius: 0 0 10px 10px;
+      border: 1px solid #b3d1ea;
+      border-top: none;
+      padding: 1em 1.2em;
+      animation: fadeIn 0.5s;
+    }
+    .topic-collapsible.active .topic-content { display: block; }
+    figure { margin: 1em 0; text-align: center; }
+    figure img, figure iframe { max-width: 100%; border-radius: 8px; box-shadow: 0 2px 8px rgba(25,118,210,0.08); }
+    figcaption { color: #1976d2; font-size: 0.98em; margin-top: 0.4em; }
+    @media (max-width: 600px) {
+      .topic-btn { font-size: 1em; padding: 0.5em 0.7em; }
+      .topic-content { padding: 0.7em 0.5em; }
+    }
+    .notes-list { display: flex; flex-direction: column; gap: 1.2em; }
+    .notes-card {
+      background: #e6f2fb;
+      border: 1.5px solid #b3d1ea;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(25,118,210,0.08);
+      padding: 0.7em 1.2em 0.7em 1.2em;
+      transition: box-shadow 0.2s, transform 0.2s;
+      margin-bottom: 0.2em;
+    }
+    .notes-card:focus-within, .notes-card:hover { box-shadow: 0 4px 16px rgba(25,118,210,0.13); transform: translateY(-2px) scale(1.01); }
+    .notes-btn {
+      background: #1976d2;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 0.6em 1.2em;
+      font-size: 1.08em;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      text-align: left;
+      margin-bottom: 0.2em;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.7em;
+    }
+    .notes-btn:hover, .notes-btn:focus { background: #1256a3; }
+    .notes-content { display: none; padding: 0.7em 0 0.2em 0; }
+    .notes-card.active .notes-content { display: block; animation: fadeIn 0.5s; }
+    .notes-actions { display: flex; gap: 1em; margin-bottom: 0.7em; flex-wrap: wrap; }
+    .notes-download, .notes-view {
+      background: #fff;
+      color: #1976d2;
+      border: 1.5px solid #1976d2;
+      border-radius: 6px;
+      padding: 0.45em 1.1em;
+      font-size: 1em;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.4em;
+      transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    }
+    .notes-download:hover, .notes-view:hover {
+      background: #1976d2;
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(25,118,210,0.13);
+    }
+    .notes-viewer { margin-top: 0.7em; }
+    .notes-viewer iframe { width: 100%; min-height: 350px; max-height: 500px; border: 1.5px solid #b3d1ea; border-radius: 8px; background: #fff; }
+    .notes-zip-btn {
+      background: #1976d2;
+      color: #fff;
+      border-radius: 6px;
+      padding: 0.6em 1.3em;
+      font-size: 1.08em;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.7em;
+      border: none;
+      transition: background 0.2s;
+      box-shadow: 0 2px 8px rgba(25,118,210,0.08);
+    }
+    .notes-zip-btn:hover { background: #1256a3; color: #fff; }
+    @media (max-width: 700px) {
+      .notes-viewer iframe { min-height: 220px; }
+      .notes-btn { font-size: 1em; padding: 0.5em 0.7em; }
+      .notes-card { padding: 0.7em 0.5em; }
+    }
+    .flashcard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5em;
+      margin: 1.5em 0 0 0;
+    }
+    .flashcard-static {
+      background: linear-gradient(135deg, #e6f2fb 70%, #b3d1ea 100%);
+      border-radius: 18px;
+      box-shadow: 0 6px 32px rgba(25,118,210,0.13), 0 1.5px 8px rgba(25,118,210,0.08);
+      padding: 1.2em 1em 1.2em 1em;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 180px;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .flashcard-static:hover {
+      box-shadow: 0 8px 32px rgba(25,118,210,0.18), 0 2px 12px rgba(25,118,210,0.13);
+      transform: translateY(-2px) scale(1.03);
+    }
+    .flashcard-term {
+      font-size: 1.5em;
+      font-weight: 700;
+      color: #1976d2;
+      margin-bottom: 0.7em;
+      text-align: center;
+      letter-spacing: 0.01em;
+    }
+    .flashcard-def {
+      font-size: 1.08em;
+      color: #222;
+      text-align: center;
+      font-weight: 500;
+    }
+    @media (max-width: 600px) {
+      .flashcard-grid { gap: 0.7em; }
+      .flashcard-static { padding: 0.7em 0.5em; min-height: 120px; }
+      .flashcard-term { font-size: 1.1em; }
+      .flashcard-def { font-size: 0.98em; }
+    }
+    .site-timer-card {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      z-index: 9999;
+      background: linear-gradient(135deg, #e6f2fb 70%, #1976d2 100%);
+      color: #1976d2;
+      border-radius: 14px;
+      box-shadow: 0 4px 18px rgba(25,118,210,0.13), 0 1.5px 8px rgba(25,118,210,0.08);
+      padding: 1em 1.4em 1em 1.2em;
+      min-width: 180px;
+      font-size: 1.08em;
+      font-weight: 600;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5em;
+      border: 1.5px solid #b3d1ea;
+      user-select: none;
+      transition: box-shadow 0.2s, background 0.2s;
+    }
+    .site-timer-card strong { color: #1256a3; }
+    .site-timer-reset {
+      background: #1976d2;
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      padding: 0.35em 1em;
+      font-size: 0.98em;
+      font-weight: 500;
+      cursor: pointer;
+      margin-top: 0.2em;
+      transition: background 0.2s;
+    }
+    .site-timer-reset:hover, .site-timer-reset:focus { background: #1256a3; }
+    @media (max-width: 600px) {
+      .site-timer-card { left: 4vw; bottom: 10px; padding: 0.7em 0.7em; font-size: 0.98em; min-width: 120px; }
+    }
+    .prof-card {
+      background: linear-gradient(90deg, #1976d2 60%, #63a4ff 100%);
+      color: #fff;
+      font-size: 2em;
+      font-weight: bold;
+      border-radius: 16px;
+      box-shadow: 0 6px 32px rgba(25,118,210,0.18), 0 2px 12px rgba(25,118,210,0.13);
+      border: 2.5px solid #1256a3;
+      padding: 1.2em 1.5em;
+      margin-bottom: 1.2em;
+      text-align: center;
+      letter-spacing: 0.01em;
+      animation: fadeSlideDown 1.1s cubic-bezier(.4,2,.6,1);
+    }
+    @keyframes fadeSlideDown {
+      from { opacity: 0; transform: translateY(-40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .student-card {
+      background: #e6f2fb;
+      border: 2px solid #b3d1ea;
+      border-radius: 14px;
+      box-shadow: 0 2px 12px rgba(25,118,210,0.10);
+      padding: 1.1em 1.5em 1.1em 1.5em;
+      margin-bottom: 1.2em;
+      display: flex;
+      align-items: center;
+      gap: 1.2em;
+      animation: fadeSlideDown 1.2s 0.2s cubic-bezier(.4,2,.6,1) both;
+    }
+    .student-avatar {
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #b3d1ea 60%, #1976d2 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.2em; color: #fff;
+      box-shadow: 0 2px 8px rgba(25,118,210,0.13);
+      flex-shrink: 0;
+    }
+    .student-info {
+      display: flex; flex-direction: column; gap: 0.2em;
+    }
+    .student-name {
+      font-size: 1.3em; font-weight: 700; color: #1976d2;
+    }
+    .student-usn {
+      font-size: 1.08em; color: #1256a3; font-weight: 500;
+    }
+    .student-email a {
+      color: #1976d2; font-size: 1.08em; text-decoration: underline; font-weight: 500;
+      transition: color 0.2s;
+    }
+    .student-email a:hover { color: #1256a3; }
+    /* --- ISA Calculator Enhancements --- */
+    #isa-card {
+      transition: box-shadow 0.3s, transform 0.3s;
+    }
+    #isa-card:hover, #isa-card:focus-within {
+      box-shadow: 0 8px 32px rgba(25,118,210,0.18), 0 2px 12px rgba(25,118,210,0.13);
+      transform: translateY(-3px) scale(1.012);
+    }
+    .animated-calc-btn {
+      background: linear-gradient(90deg, #1976d2 60%, #63a4ff 100%);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.7em 2.2em;
+      font-size: 1.13em;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(25,118,210,0.10);
+      transition: background 0.3s, transform 0.18s, box-shadow 0.2s;
+      position: relative;
+      overflow: hidden;
+      outline: none;
+    }
+    .animated-calc-btn::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255,255,255,0.25);
+      border-radius: 100%;
+      transform: translate(-50%, -50%);
+      transition: width 0.4s cubic-bezier(.4,2,.6,1), height 0.4s cubic-bezier(.4,2,.6,1);
+      z-index: 1;
+    }
+    .animated-calc-btn:hover, .animated-calc-btn:focus {
+      background: linear-gradient(90deg, #63a4ff 60%, #1976d2 100%);
+      transform: scale(1.045) translateY(-2px);
+      box-shadow: 0 6px 24px rgba(25,118,210,0.18), 0 2px 12px rgba(25,118,210,0.13);
+    }
+    .animated-calc-btn:active::after {
+      width: 220%;
+      height: 220%;
+    }
+    .animated-calc-btn:active {
+      transform: scale(0.98);
+    }
+    /* --- ISA Calculator Redesign --- */
+    .isa-calc-form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.2em;
+      margin-top: 0.5em;
+    }
+    .isa-calc-row {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 0.2em;
+    }
+    .isa-calc-label {
+      font-size: 1.13em;
+      color: #1976d2;
+      font-weight: 600;
+      margin-bottom: 0.4em;
+      letter-spacing: 0.01em;
+    }
+    .isa-calc-input {
+      width: 220px;
+      font-size: 1.35em;
+      padding: 0.45em 0.7em;
+      border-radius: 10px;
+      border: 2px solid #b3d1ea;
+      background: #f5fbff;
+      color: #1976d2;
+      text-align: right;
+      box-shadow: 0 2px 8px rgba(25,118,210,0.07);
+      outline: none;
+      transition: border 0.2s, box-shadow 0.2s;
+    }
+    .isa-calc-input:focus {
+      border: 2px solid #1976d2;
+      box-shadow: 0 4px 16px rgba(25,118,210,0.13);
+    }
+    .isa-calc-btn {
+      width: 220px;
+      margin-top: 0.2em;
+      font-size: 1.13em;
+      font-weight: 700;
+      border-radius: 10px;
+    }
+    @media (max-width: 600px) {
+      .isa-calc-input, .isa-calc-btn { width: 98vw; max-width: 98vw; font-size: 1em; }
+    }
+    /* --- Lift & Drag Calculator Redesign --- */
+    #lift-drag-card {
+      transition: box-shadow 0.3s, transform 0.3s;
+    }
+    #lift-drag-card:hover, #lift-drag-card:focus-within {
+      box-shadow: 0 8px 32px rgba(25,118,210,0.18), 0 2px 12px rgba(25,118,210,0.13);
+      transform: translateY(-3px) scale(1.012);
+    }
+    .ld-calc-form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.2em;
+      margin-top: 0.5em;
+    }
+    .ld-calc-row {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 0.2em;
+    }
+    .ld-calc-label {
+      font-size: 1.13em;
+      color: #1976d2;
+      font-weight: 600;
+      margin-bottom: 0.4em;
+      letter-spacing: 0.01em;
+    }
+    .ld-calc-input {
+      width: 220px;
+      font-size: 1.25em;
+      padding: 0.45em 0.7em;
+      border-radius: 10px;
+      border: 2px solid #b3d1ea;
+      background: #f5fbff;
+      color: #1976d2;
+      text-align: right;
+      box-shadow: 0 2px 8px rgba(25,118,210,0.07);
+      outline: none;
+      transition: border 0.2s, box-shadow 0.2s;
+    }
+    .ld-calc-input:focus {
+      border: 2px solid #1976d2;
+      box-shadow: 0 4px 16px rgba(25,118,210,0.13);
+    }
+    .ld-calc-btn {
+      width: 220px;
+      margin-top: 0.2em;
+      font-size: 1.13em;
+      font-weight: 700;
+      border-radius: 10px;
+    }
+    @media (max-width: 600px) {
+      .ld-calc-input, .ld-calc-btn { width: 98vw; max-width: 98vw; font-size: 1em; }
+    }
+    /* --- ML-based Drag Predictor Calculator Redesign --- */
+    .ml-calc-form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.2em;
+      margin-top: 0.5em;
+    }
+    .ml-calc-row {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 0.2em;
+    }
+    .ml-calc-label {
+      font-size: 1.13em;
+      color: #1976d2;
+      font-weight: 600;
+      margin-bottom: 0.4em;
+      letter-spacing: 0.01em;
+    }
+    .ml-calc-input {
+      width: 220px;
+      font-size: 1.25em;
+      padding: 0.45em 0.7em;
+      border-radius: 10px;
+      border: 2px solid #b3d1ea;
+      background: #f5fbff;
+      color: #1976d2;
+      text-align: right;
+      box-shadow: 0 2px 8px rgba(25,118,210,0.07);
+      outline: none;
+      transition: border 0.2s, box-shadow 0.2s;
+    }
+    .ml-calc-input:focus {
+      border: 2px solid #1976d2;
+      box-shadow: 0 4px 16px rgba(25,118,210,0.13);
+    }
+    .ml-calc-btn {
+      width: 220px;
+      margin-top: 0.2em;
+      font-size: 1.13em;
+      font-weight: 700;
+      border-radius: 10px;
+    }
+    @media (max-width: 600px) {
+      .ml-calc-input, .ml-calc-btn { width: 98vw; max-width: 98vw; font-size: 1em; }
+    }
+    /* Responsive Layout Enhancements */
+    @media (max-width: 1000px) {
+      .container {
+        max-width: 98vw;
+        padding: 0 0.5rem;
+      }
+      .card, .unit-module, .notes-card, .prof-card, .student-card, .project-card {
+        padding: 1em 0.7em;
+      }
+    }
+    @media (max-width: 800px) {
+      nav {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 0.5rem 0.2rem;
+      }
+      .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.7rem;
+      }
+      #theme-toggle {
+        right: 0.7rem;
+        font-size: 1.1em;
+      }
+    }
+    @media (max-width: 600px) {
+      .container {
+        padding: 0 0.1rem;
+      }
+      nav {
+        padding: 0.3rem 0.1rem;
+      }
+      .nav-links {
+        gap: 0.3rem;
+      }
+      .card, .unit-module, .notes-card, .prof-card, .student-card, .project-card {
+        padding: 0.7em 0.3em;
+        margin-bottom: 0.7em;
+      }
+      h1, h2, h3 {
+        font-size: 1.1em;
+      }
+      .flashcard, .flashcard-static {
+        width: 98vw !important;
+        min-width: 0 !important;
+        font-size: 1em !important;
+      }
+      .flashcard-front, .flashcard-back {
+        font-size: 1em !important;
+        padding: 0.5em !important;
+      }
+      .flashcard-grid {
+        gap: 0.5em !important;
+      }
+      .notes-btn, .notes-download, .notes-view, .notes-zip-btn {
+        font-size: 1em !important;
+        padding: 0.5em 0.7em !important;
+      }
+      .notes-actions {
+        flex-direction: column;
+        gap: 0.5em;
+      }
+      .notes-viewer iframe, .notes-viewer img {
+        min-height: 120px !important;
+        max-height: 220px !important;
+      }
+      .student-card {
+        flex-direction: column;
+        gap: 0.5em;
+        align-items: flex-start;
+      }
+      .student-avatar {
+        width: 44px; height: 44px; font-size: 1.3em;
+      }
+      .prof-card {
+        font-size: 1.1em;
+        padding: 0.7em 0.5em;
+      }
+      .project-card {
+        padding: 0.7em 0.5em;
+      }
+      .isa-calc-input, .isa-calc-btn, .ld-calc-input, .ld-calc-btn, .ml-calc-input, .ml-calc-btn {
+        width: 98vw !important;
+        max-width: 98vw !important;
+        font-size: 1em !important;
+      }
+    }
+    @media (max-width: 400px) {
+      nav {
+        padding: 0.1rem 0.05rem;
+      }
+      .nav-links {
+        gap: 0.1rem;
+      }
+      .card, .unit-module, .notes-card, .prof-card, .student-card, .project-card {
+        padding: 0.3em 0.1em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <div class="nav-links">
+        <a href="#home" class="active">Home</a>
+        <a href="#unit1">Unit I</a>
+        <a href="#unit2">Unit II</a>
+        <a href="#unit3">Unit III</a>
+        <a href="#unit4">Unit IV</a>
+        <a href="#unit5">Unit V</a>
+        <a href="#ai-tools">AI Tools Zone</a>
+        <a href="#quiz">Quiz / Flashcards</a>
+        <a href="#notes">Notes</a>
+      </div>
+      <button id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+    </nav>
+  </header>
+  <main class="container">
+    <section id="home" class="section">
+      <div class="prof-card">
+        This project is guided by Prof Pranesh Kumar
+      </div>
+      <div class="student-card">
+        <div class="student-avatar" aria-label="Profile">👨‍🎓</div>
+        <div class="student-info">
+          <div class="student-name">Omkar Babu Mastamardi</div>
+          <div class="student-usn">USN: 1RV23AI403</div>
+          <div class="student-email"><a href="mailto:omkarbm.ai23@rvce.edu.in">omkarbm.ai23@rvce.edu.in</a></div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:1em; background: linear-gradient(90deg, #e6f2fb 70%, #b3d1ea 100%);">
+        <h2 style="margin-top:0; color:#1976d2;">Project Introduction</h2>
+      </div>
+      <div class="card project-card" style="margin-bottom:1em;">
+        <h3 style="color:#1976d2;">Project Title</h3>
+        <div style="font-size:1.15em; font-weight:600; color:#1256a3;">AeroEdu – Learn Aerospace Basics</div>
+        <p style="margin-top:0.7em;">AeroEdu is an innovative educational platform designed to make aerospace engineering accessible, interactive, and engaging for students and enthusiasts. The project brings together essential concepts, tools, and resources in a single, user-friendly portal.</p>
+      </div>
+      <div class="card project-card" style="margin-bottom:1em;">
+        <h3 style="color:#1976d2;">Goal</h3>
+        <p style="font-size:1.08em;">To develop a comprehensive, interactive, and offline-capable website that empowers users to learn the fundamentals of aerospace engineering. AeroEdu integrates calculators, flashcards, AI tools, and downloadable notes to support both classroom and self-paced learning.</p>
+        <ul style="margin-top:0.7em;">
+          <li><b>Comprehensive Coverage:</b> All major aerospace topics are included, from flight vehicles to advanced systems.</li>
+          <li><b>Interactivity:</b> Users can engage with calculators, quizzes, and visual diagrams for hands-on learning.</li>
+          <li><b>AI Integration:</b> Smart tools and a Q&A chatbot enhance understanding and provide instant support.</li>
+          <li><b>Offline Access:</b> The platform is designed to work seamlessly even without internet connectivity.</li>
+          <li><b>Resource Hub:</b> Downloadable notes and exam materials are available for thorough preparation.</li>
+        </ul>
+      </div>
+      <div class="card project-card" style="margin-bottom:1em;">
+        <h3 style="color:#1976d2;">Objectives</h3>
+        <ul style="font-size:1.08em;">
+          <li><b>Structured Content:</b> Deliver clear, well-organized modules on flight vehicles, aerodynamics, propulsion, structures, systems, and instruments.</li>
+          <li><b>Interactive Learning:</b> Provide calculators for real-time problem solving, quizzes for self-assessment, and visual diagrams for conceptual clarity.</li>
+          <li><b>AI-Powered Tools:</b> Integrate a Q&A chatbot and smart calculators to answer questions and assist with complex topics.</li>
+          <li><b>Offline Usability:</b> Ensure the website is fully functional without internet, supporting learning anytime, anywhere.</li>
+          <li><b>Exam Preparation:</b> Offer downloadable notes, previous question papers, and a comprehensive formulas sheet for revision and practice.</li>
+        </ul>
+      </div>
+      <div class="card project-card" style="margin-bottom:1.5em;">
+        <h3 style="color:#1976d2;">Problem Statement</h3>
+        <p style="font-size:1.08em;">Many students and enthusiasts face challenges in accessing a unified, interactive, and offline-friendly resource for aerospace engineering basics. Existing materials are often scattered, require constant internet access, or lack engaging features. AeroEdu addresses these issues by providing:</p>
+        <ul style="font-size:1.08em;">
+          <li><b>Unified Platform:</b> All essential aerospace topics and tools in one place.</li>
+          <li><b>Interactive Features:</b> Calculators, quizzes, and AI tools for active learning.</li>
+          <li><b>Offline Capability:</b> Full access to content and tools without internet dependency.</li>
+          <li><b>User-Friendly Design:</b> Intuitive navigation and visually appealing layout for all users.</li>
+        </ul>
+        <p style="margin-top:0.7em;">By bridging these gaps, AeroEdu empowers learners to master aerospace fundamentals efficiently and enjoyably.</p>
+      </div>
+    </section>
+    <section id="unit1" class="section">
+      <h2>Unit I: Basics of Flight Vehicles</h2>
+      <div class="card unit-module">
+        <div class="topic-collapsible">
+          <button class="topic-btn">History of Aviation</button>
+          <div class="topic-content">
+            <ul>
+              <li><b>Ancient Myths:</b> Stories like Icarus and Daedalus show early human fascination with flight.</li>
+              <li><b>1783:</b> First manned hot air balloon flight by the Montgolfier brothers in France.</li>
+              <li><b>Late 1800s:</b> Glider experiments by Otto Lilienthal and others.</li>
+              <li><b>1903:</b> Wright brothers achieve first powered, controlled flight at Kitty Hawk.</li>
+              <li><b>1914–1918:</b> World War I accelerates aircraft development.</li>
+              <li><b>1930s–40s:</b> Introduction of all-metal aircraft, jet engines, and helicopters.</li>
+              <li><b>1957:</b> Sputnik 1 launches the space age.</li>
+              <li><b>1969:</b> Apollo 11 lands humans on the Moon.</li>
+              <li><b>Modern Era:</b> Supersonic jets, commercial airliners, reusable rockets (SpaceX).</li>
+            </ul>
+            <figure>
+              <img src="assets/images/WrightFlyer.jpg" alt="Wright Flyer, first powered aircraft">
+              <figcaption>The Wright Flyer (1903) – First powered, controlled flight.</figcaption>
+            </figure>
+            <figure>
+              <img src="assets/images/helicopteranatomy.jpg" alt="Helicopter anatomy diagram">
+              <figcaption>Basic helicopter anatomy</figcaption>
+            </figure>
+            <figure>
+              <iframe width="360" height="203" src="https://www.youtube.com/embed/1U6Nzcv9Vws" title="How Jet Engines Work" frameborder="0" allowfullscreen></iframe>
+              <figcaption>Video: How Jet Engines Work (YouTube)</figcaption>
+            </figure>
+          </div>
+        </div>
+        <div class="topic-collapsible">
+          <button class="topic-btn">International Standard Atmosphere (ISA)</button>
+          <div class="topic-content">
+            <p>The International Standard Atmosphere (ISA) is a model that defines average atmospheric properties (temperature, pressure, density) at various altitudes. It is used for aircraft design, performance calculations, and calibration.</p>
+            <ul>
+              <li><b>Sea Level:</b> 15°C, 101325 Pa, 1.225 kg/m³</li>
+              <li><b>Troposphere:</b> Up to 11,000 m, temperature decreases with altitude</li>
+              <li><b>Stratosphere:</b> 11,000–20,000 m, temperature nearly constant</li>
+              <li><b>Applications:</b> Used in flight planning, altimeter calibration, and performance charts</li>
+            </ul>
+            <figure>
+              <img src="assets/images/Atmosphericlayers.jpg" alt="Atmospheric layers diagram">
+              <figcaption>Atmospheric layers</figcaption>
+            </figure>
+            <figure>
+              <iframe width="360" height="203" src="https://www.youtube.com/embed/2K8Q3cqGs7I" title="ISA Model Explained" frameborder="0" allowfullscreen></iframe>
+              <figcaption>Video: International Standard Atmosphere (ISA) Explained (YouTube)</figcaption>
+            </figure>
+          </div>
+        </div>
+        <div class="topic-collapsible">
+          <button class="topic-btn">Aircraft & Helicopter Anatomy</button>
+          <div class="topic-content">
+            <p>Modern aircraft and helicopters are made up of several key components, each serving a specific function for flight and control.</p>
+            <ul>
+              <li><b>Fuselage:</b> Main body, holds crew, passengers, and cargo</li>
+              <li><b>Wings/Rotors:</b> Generate lift (fixed-wing or rotary-wing)</li>
+              <li><b>Empennage:</b> Tail assembly for stability and control</li>
+              <li><b>Propulsion:</b> Engines or rotors for thrust</li>
+              <li><b>Landing Gear:</b> Supports aircraft on ground</li>
+            </ul>
+            <figure>
+              <img src="assets/images/Aircraft wing structure.jpg" alt="Aircraft wing structure diagram">
+              <figcaption>Aircraft wing structure</figcaption>
+            </figure>
+            <figure>
+              <img src="assets/images/Aircraft fuselage structure .jpg" alt="Aircraft fuselage structure diagram">
+              <figcaption>Aircraft fuselage structure</figcaption>
+            </figure>
+            <figure>
+              <iframe width="360" height="203" src="https://www.youtube.com/embed/5ltjFEei3AI" title="Aircraft Anatomy Explained" frameborder="0" allowfullscreen></iframe>
+              <figcaption>Video: Aircraft Anatomy Explained (YouTube)</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="unit2" class="section">
+      <h2>Unit II: Aircraft Aerodynamics</h2>
+      <div class="card unit-module">
+        <div class="topic-collapsible">
+          <button class="topic-btn">Bernoulli's Theorem & Principle of Lift</button>
+          <div class="topic-content">
+            <p>Bernoulli's theorem explains how pressure and velocity of a fluid (like air) are related. In aerodynamics, it helps explain how wings generate lift:</p>
+            <ul>
+              <li>As air flows over the curved upper surface of a wing, it speeds up, causing pressure to drop (Bernoulli's principle).</li>
+              <li>The higher pressure below the wing pushes up, creating lift.</li>
+              <li>Lift is also influenced by angle of attack and airfoil shape.</li>
+            </ul>
+            <figure>
+              <img src="assets/images/BernoulliPrinciple.jpg" alt="Bernoulli's principle diagram">
+              <figcaption>Bernoulli's Principle: Faster airflow = lower pressure</figcaption>
+            </figure>
+            <figure>
+              <iframe width="360" height="203" src="https://www.youtube.com/embed/5ltjFEei3AI" title="How Wings Generate Lift" frameborder="0" allowfullscreen></iframe>
+              <figcaption>Video: How Wings Generate Lift (YouTube)</figcaption>
+            </figure>
+          </div>
+        </div>
+        <div class="topic-collapsible">
+          <button class="topic-btn">Lift, Drag, and Types of Drag</button>
+          <div class="topic-content">
+            <p>Aircraft experience several aerodynamic forces:</p>
+            <ul>
+              <li><b>Lift:</b> Upward force generated by wings due to pressure difference.</li>
+              <li><b>Drag:</b> Resistance to motion through air. Two main types:</li>
+              <ul>
+                <li><b>Parasite Drag:</b> Due to shape, skin friction, and interference (increases with speed).</li>
+                <li><b>Induced Drag:</b> Caused by lift generation (decreases with speed).</li>
+              </ul>
+              <li><b>Thrust:</b> Forward force from engines.</li>
+              <li><b>Weight:</b> Downward force due to gravity.</li>
+            </ul>
+            <figure>
+              <img src="assets/images/LiftDragThrustWeight.jpg" alt="Aircraft forces diagram">
+              <figcaption>Forces on an aircraft: Lift, Drag, Thrust, Weight</figcaption>
+            </figure>
+            <figure>
+              <iframe width="360" height="203" src="https://www.youtube.com/embed/6UlsArvbTeo" title="Types of Drag" frameborder="0" allowfullscreen></iframe>
+              <figcaption>Video: Types of Drag (YouTube)</figcaption>
+            </figure>
+          </div>
+        </div>
+        <div class="topic-collapsible">
+          <button class="topic-btn">Aerodynamic Coefficients</button>
+          <div class="topic-content">
+            <p>Aerodynamic coefficients quantify how effectively a shape generates lift or drag:</p>
+            <ul>
+              <li><b>Lift Coefficient (Cl):</b> Indicates lift produced at a given angle of attack and shape.</li>
+              <li><b>Drag Coefficient (Cd):</b> Indicates drag produced by the shape and surface.</li>
+              <li>Both are used in the lift and drag equations to calculate forces.</li>
+            </ul>
+            <figure>
+              <img src="assets/images/LiftandDragCoefficientCurves.jpg" alt="Lift and drag coefficient curves">
+              <figcaption>Lift and Drag Coefficient Curves</figcaption>
+            </figure>
+            <figure>
+              <a href="https://www.youtube.com/watch?v=6lLk5kRkT6k" target="_blank" rel="noopener">
+                <img src="https://img.youtube.com/vi/6lLk5kRkT6k/hqdefault.jpg" alt="Aerodynamic Coefficients Explained (YouTube)">
+              </a>
+              <figcaption>
+                <a href="https://www.youtube.com/watch?v=6lLk5kRkT6k" target="_blank" rel="noopener">
+                  Video: Aerodynamic Coefficients Explained (YouTube) – Click to watch
+                </a>
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+        <div class="topic-collapsible">
+          <button class="topic-btn">Airfoil Nomenclature & Wing Planforms</button>
+          <div class="topic-content">
+            <p>Airfoils and wings come in various shapes, each with unique aerodynamic properties:</p>
+            <ul>
+              <li><b>Airfoil Nomenclature:</b> Leading edge, trailing edge, chord, camber, thickness, etc.</li>
+              <li><b>Wing Planforms:</b> Rectangular, tapered, swept, delta, elliptical.</li>
+              <li>Shape affects lift, drag, and stall characteristics.</li>
+            </ul>
+            <figure>
+              <img src="assets/images/Airfoilnomenclature .jpg" alt="Airfoil nomenclature diagram">
+              <figcaption>Airfoil nomenclature</figcaption>
+            </figure>
+            <figure>
+              <img src="assets/images/Commonwingplanformtypes.jpg" alt="Wing planform types diagram">
+              <figcaption>Common wing planform types</figcaption>
+            </figure>
+            <figure>
+              <iframe width="360" height="203" src="https://www.youtube.com/embed/5ltjFEei3AI" title="Airfoil Lift Animation" frameborder="0" allowfullscreen></iframe>
+              <figcaption>Video: Airfoil Lift Animation (YouTube)</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="unit3" class="section">
+      <h2>Unit III: Propulsion & Space Mechanics</h2>
+      <div class="card unit-module">
+        <div class="topic-collapsible">
+          <button class="topic-btn">Jet Engines: Turbojet, Turbofan, and More</button>
+          <div class="topic-content">
+            <p>Jet engines are the primary propulsion systems for modern aircraft. There are several types:</p>
+            <ul>
+              <li><b>Turbojet:</b> Simple jet engine, air is compressed, mixed with fuel, combusted, and expelled for thrust.</li>
+              <li><b>Turbofan:</b> Most common in airliners, uses a large fan to move more air for greater efficiency and quieter operation.</li>
+              <li><b>Turboprop:</b> Jet engine drives a propeller, efficient at lower speeds.</li>
+              <li><b>Ramjet/Scramjet:</b> No moving parts, operate at very high speeds (supersonic/hypersonic).</li>
+            </ul>
+            <figure>
+              <img src="assets/images/Turbojet engine operation.jpg" alt="Turbojet engine diagram">
+              <figcaption>Turbojet engine operation</figcaption>
+            </figure>
+            <figure>
+              <img src="assets/images/Turbofan engine operation.jpg" alt="Turbofan engine diagram">
+              <figcaption>Turbofan engine operation</figcaption>
+            </figure>
+            <figure>
+              <iframe width="360" height="203" src="https://www.youtube.com/embed/1U6Nzcv9Vws" title="How Jet Engines Work" frameborder="0" allowfullscreen></iframe>
+              <figcaption>Video: How Jet Engines Work (YouTube)</figcaption>
+            </figure>
+          </div>
+        </div>
+        <div class="topic-collapsible">
+          <button class="topic-btn">Rocket Engines & Types</button>
+          <div class="topic-content">
+            <p>Rocket engines are used for spaceflight and high-speed missiles. Types include:</p>
+            <ul>
+              <li><b>Chemical Rockets:</b> Use chemical propellants (liquid or solid) for thrust.</li>
+              <li><b>Liquid Rockets:</b> Fuel and oxidizer are stored separately and mixed in the engine.</li>
+              <li><b>Solid Rockets:</b> Propellant is a solid mixture, simple and reliable.</li>
+              <li><b>Hybrid Rockets:</b> Combine features of liquid and solid rockets.</li>
+              <li><b>Electric/Ion Rockets:</b> Use electric fields to accelerate ions, efficient for deep space.</li>
+            </ul>
+            <figure>
+              <img src="assets/images/Types of rocket engines.jpg" alt="Rocket engine types diagram">
+              <figcaption>Types of rocket engines</figcaption>
+            </figure>
+            <figure>
+              <a href="https://www.youtube.com/watch?v=1Zb8b1F7Gsw" target="_blank" rel="noopener">
+                <img src="https://img.youtube.com/vi/1Zb8b1F7Gsw/hqdefault.jpg" alt="Rocket Types Explained (YouTube)">
+              </a>
+              <figcaption>
+                <a href="https://www.youtube.com/watch?v=1Zb8b1F7Gsw" target="_blank" rel="noopener">
+                  Video: Rocket Types Explained (YouTube) – Click to watch
+                </a>
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+        <div class="topic-collapsible">
+          <button class="topic-btn">Brayton Cycle (Jet Engine Thermodynamics)</button>
+          <div class="topic-content">
+            <p>The Brayton cycle describes the thermodynamic process in jet engines:</p>
+            <ul>
+              <li>Air is compressed (increases pressure and temperature).</li>
+              <li>Fuel is added and combusted at constant pressure (increases temperature).</li>
+              <li>Hot gases expand through a turbine and nozzle, producing thrust.</li>
+              <li>Efficiency depends on pressure ratio and temperature.</li>
+            </ul>
+            <figure>
+              <img src="assets/images/Brayton cycle p-V diagram .jpg" alt="Brayton cycle p-V diagram">
+              <figcaption>Brayton cycle p-V diagram</figcaption>
+            </figure>
+            <figure>
+              <iframe width="360" height="203" src="https://www.youtube.com/embed/1U6Nzcv9Vws" title="Brayton Cycle Animation" frameborder="0" allowfullscreen></iframe>
+              <figcaption>Video: Brayton Cycle Animation (YouTube)</figcaption>
+            </figure>
+          </div>
+        </div>
+        <div class="topic-collapsible">
+          <button class="topic-btn">Orbital Mechanics: Kepler's Laws & Trajectories</button>
+          <div class="topic-content">
+            <p>Orbital mechanics studies the motion of objects in space, governed by Kepler's Laws:</p>
+            <div class="card collapsible">
+              <button class="collapse-btn">Show Details</button>
+              <div class="collapse-content">
+                <p><strong>Description:</strong> Principles of propulsion systems and basics of space flight mechanics.</p>
+                <ul>
+                  <li>Jet engines, Rocket engines</li>
+                  <li>Newton's laws in space</li>
+                  <li>Orbital motion basics</li>
+                </ul>
+                <div style="text-align:center;">
+                  <!-- Simple SVG rocket -->
+                  <svg width="50" height="80" viewBox="0 0 50 80">
+                    <rect x="20" y="10" width="10" height="40" fill="#b3d1ea" stroke="#1976d2"/>
+                    <polygon points="25,0 35,10 15,10" fill="#1976d2"/>
+                    <polygon points="20,50 25,70 30,50" fill="#1976d2"/>
+                  </svg>
+                  <div style="font-size:0.9em; color:#1976d2;">(Rocket Diagram)</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="unit4" class="section">
+      <h2>Unit IV: Aerospace Structures</h2>
+      <div class="card unit-module">
+        <div class="topic-collapsible">
+          <button class="topic-btn">Monocoque, Semi-Monocoque, and Geodesic Structures</button>
+          <div class="topic-content">
+            <p>Aircraft structures are designed to be strong yet lightweight. Three main types are:</p>
+            <ul>
+              <li><b>Monocoque:</b> The external skin supports most of the load. Simple but can be less damage-tolerant.</li>
+              <li><b>Semi-Monocoque:</b> Combines a load-bearing skin with internal frames and stringers. Most modern aircraft use this design for strength and redundancy.</li>
+              <li><b>Geodesic:</b> Uses a lattice of intersecting structural members. Strong and damage-tolerant, used in some historic aircraft (e.g., Vickers Wellington).</li>
+            </ul>
+            <figure>
+              <img src="assets/images/Monocoque structure.jph" alt="Monocoque structure diagram">
+              <figcaption>Monocoque structure</figcaption>
+            </figure>
+            <figure>
+              <img src="assets/images/Semi-monocoque structur.jpg" alt="Semi-monocoque structure diagram">
+              <figcaption>Semi-monocoque structure</figcaption>
+            </figure>
+            <figure>
+              <img src="assets/images/Geodesic structure diagram Geodesic structure .jpg" alt="Geodesic structure diagram">
+              <figcaption>Geodesic structure</figcaption>
+            </figure>
+          </div>
+        </div>
+        <div class="topic-collapsible">
+          <button class="topic-btn">Wing and Fuselage Structure Comparison</button>
+          <div class="topic-content">
+            <p>Wings and fuselages are built differently to handle specific loads:</p>
+            <ul>
+              <li><b>Wings:</b> Designed to carry lift loads, often use spars, ribs, and skin. May include fuel tanks and control surfaces.</li>
+              <li><b>Fuselage:</b> Houses crew, passengers, and cargo. Built to handle bending, torsion, and pressurization loads.</li>
+              <li>Both use lightweight, strong materials like aluminum alloys and composites.</li>
+            </ul>
+            <figure>
+              <img src="assets/images/Aircraft wing structure.jpg" alt="Aircraft wing structure diagram">
+              <figcaption>Aircraft wing structure</figcaption>
+            </figure>
+            <figure>
+              <img src="assets/images/Aircraft fuselage structure .jpg" alt="Aircraft fuselage structure diagram">
+              <figcaption>Aircraft fuselage structure</figcaption>
+            </figure>
+          </div>
+        </div>
+        <div class="topic-collapsible">
+          <button class="topic-btn">Aircraft Structure Basics (Video)</button>
+          <div class="topic-content">
+            <p>Watch this video for a visual overview of aircraft structural elements and how they work together to ensure safety and performance.</p>
+            <figure>
+              <iframe width="360" height="203" src="https://www.youtube.com/embed/1U6Nzcv9Vws" title="Aircraft Structure Basics" frameborder="0" allowfullscreen></iframe>
+              <figcaption>Video: Aircraft Structure Basics (YouTube)</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="unit5" class="section">
+      <h2>Unit V: Systems & Instruments</h2>
+      <div class="card unit-module">
+        <div class="topic-collapsible">
+          <button class="topic-btn">Pitot Tubes & Air Data Systems</button>
+          <div class="topic-content">
+            <p>Pitot tubes and air data systems are essential for measuring airspeed and other flight parameters:</p>
+            <ul>
+              <li><b>Pitot Tube:</b> Measures dynamic pressure (difference between total and static pressure) to determine airspeed.</li>
+              <li><b>Static Port:</b> Measures ambient atmospheric pressure.</li>
+              <li><b>Air Data Computer:</b> Processes pitot and static data to provide airspeed, altitude, and vertical speed to instruments.</li>
+            </ul>
+            <figure>
+              <img src="assets/images/Pitot tube and static port.jpg" alt="Pitot tube diagram">
+              <figcaption>Pitot tube and static port</figcaption>
+            </figure>
+            <figure>
+              <iframe width="360" height="203" src="https://www.youtube.com/embed/6UlsArvbTeo" title="How Pitot Tubes Work" frameborder="0" allowfullscreen></iframe>
+              <figcaption>Video: How Pitot Tubes Work</figcaption>
+            </figure>
+          </div>
+        </div>
+        <div class="topic-collapsible">
+          <button class="topic-btn">Altimeters & Cockpit Instruments</button>
+          <div class="topic-content">
+            <p>Altimeters and cockpit instruments provide pilots with critical flight information:</p>
+            <ul>
+              <li><b>Altimeter:</b> Measures altitude using static pressure. Can be barometric or radar-based.</li>
+              <li><b>Airspeed Indicator:</b> Uses pitot-static system to show speed relative to air.</li>
+              <li><b>Attitude Indicator:</b> Shows aircraft orientation (pitch and roll) using gyroscopes.</li>
+              <li><b>Other Instruments:</b> Vertical speed indicator, heading indicator, turn coordinator, etc.</li>
+            </ul>
+            <figure>
+              <img src="assets/images/Common cockpit instruments.jpg" alt="Aircraft cockpit instruments">
+              <figcaption>Common cockpit instruments</figcaption>
+            </figure>
+            <figure>
+              <img src="assets/images/Altimeter working principle.jpg" alt="Altimeter diagram">
+              <figcaption>Altimeter working principle</figcaption>
+            </figure>
+          </div>
+        </div>
+        <div class="topic-collapsible">
+          <button class="topic-btn">Fuel & Hydraulic Systems</button>
+          <div class="topic-content">
+            <p>Modern aircraft use complex systems to manage fuel and operate controls:</p>
+            <ul>
+              <li><b>Fuel System:</b> Stores and delivers fuel to engines. Includes tanks, pumps, valves, and filters.</li>
+              <li><b>Hydraulic System:</b> Uses pressurized fluid to operate landing gear, brakes, flaps, and flight controls.</li>
+              <li>Redundancy and safety features are built in to prevent failures.</li>
+            </ul>
+            <figure>
+              <img src="assets/images/Aircraft fuel system.jpg" alt="Aircraft fuel system diagram">
+              <figcaption>Aircraft fuel system</figcaption>
+            </figure>
+            <figure>
+              <img src="assets/images/Aircraft hydraulic system.jpg" alt="Aircraft hydraulic system diagram">
+              <figcaption>Aircraft hydraulic system</figcaption>
+            </figure>
+          </div>
+        </div>
+        <div class="topic-collapsible">
+          <button class="topic-btn">Aircraft Instrumentation Basics (Video)</button>
+          <div class="topic-content">
+            <p>Watch this video for an overview of key aircraft instruments and how they help pilots fly safely and efficiently.</p>
+            <figure>
+              <a href="https://www.youtube.com/watch?v=2K8Q3cqGs7I" target="_blank" rel="noopener">
+                <img src="https://img.youtube.com/vi/2K8Q3cqGs7I/hqdefault.jpg" alt="Aircraft Instrumentation Basics (YouTube)">
+              </a>
+              <figcaption>
+                <a href="https://www.youtube.com/watch?v=2K8Q3cqGs7I" target="_blank" rel="noopener">
+                  Video: Aircraft Instrumentation Basics (YouTube) – Click to watch
+                </a>
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="ai-tools" class="section">
+      <h2>AI Tools Zone</h2>
+      <div class="card" id="isa-card">
+        <h3>A. ISA Model Calculator <span class="help-tip" tabindex="0" aria-label="Calculates temperature and pressure at a given altitude using the International Standard Atmosphere model.">?</span></h3>
+        <div style="color:#1976d2;font-size:1.05em;margin-bottom:0.7em;">
+          <strong>How to use:</strong> Enter an altitude (in meters, up to 11,000) and click <b>Calculate</b> to get the standard temperature and pressure at that height.
+        </div>
+        <form id="isa-form" aria-label="ISA Model Calculator" class="isa-calc-form">
+          <div class="isa-calc-row">
+            <label for="isa-altitude" class="isa-calc-label">Altitude (m, up to 11,000):</label>
+            <input type="number" id="isa-altitude" min="0" max="11000" required aria-required="true" aria-label="Altitude in meters" class="isa-calc-input" autocomplete="off">
+          </div>
+          <div style="text-align:center;margin-top:1.1em;">
+            <button type="submit" class="animated-calc-btn isa-calc-btn">Calculate</button>
+          </div>
+        </form>
+        <div id="isa-result" style="margin-top:1em;"></div>
+      </div>
+      <div class="card" id="lift-drag-card">
+        <h3>B. Lift & Drag Calculator <span class="help-tip" tabindex="0" aria-label="Calculates lift and drag forces based on air density, velocity, wing area, and coefficients.">?</span></h3>
+        <div style="color:#1976d2;font-size:1.05em;margin-bottom:0.7em;">
+          <strong>How to use:</strong> Enter the required values and click <b>Calculate</b> to find the lift and drag forces for your aircraft.
+        </div>
+        <form id="lift-drag-form" aria-label="Lift and Drag Calculator" class="ld-calc-form">
+          <div class="ld-calc-row">
+            <label for="ld-density" class="ld-calc-label">Air Density (ρ, kg/m³):</label>
+            <input type="number" step="any" id="ld-density" required aria-required="true" aria-label="Air Density" class="ld-calc-input" autocomplete="off">
+          </div>
+          <div class="ld-calc-row">
+            <label for="ld-velocity" class="ld-calc-label">Velocity (V, m/s):</label>
+            <input type="number" step="any" id="ld-velocity" required aria-required="true" aria-label="Velocity" class="ld-calc-input" autocomplete="off">
+          </div>
+          <div class="ld-calc-row">
+            <label for="ld-area" class="ld-calc-label">Wing Area (S, m²):</label>
+            <input type="number" step="any" id="ld-area" required aria-required="true" aria-label="Wing Area" class="ld-calc-input" autocomplete="off">
+          </div>
+          <div class="ld-calc-row">
+            <label for="ld-cl" class="ld-calc-label">Lift Coefficient (Cl):</label>
+            <input type="number" step="any" id="ld-cl" required aria-required="true" aria-label="Lift Coefficient" class="ld-calc-input" autocomplete="off">
+          </div>
+          <div class="ld-calc-row">
+            <label for="ld-cd" class="ld-calc-label">Drag Coefficient (Cd):</label>
+            <input type="number" step="any" id="ld-cd" required aria-required="true" aria-label="Drag Coefficient" class="ld-calc-input" autocomplete="off">
+          </div>
+          <div style="text-align:center;margin-top:1.1em;">
+            <button type="submit" class="animated-calc-btn ld-calc-btn">Calculate</button>
+          </div>
+        </form>
+        <div id="lift-drag-result" style="margin-top:1em;"></div>
+      </div>
+      <div class="card" id="ml-drag-card">
+        <h3>C. ML-based Drag Predictor <span class="help-tip" tabindex="0" aria-label="Predicts drag using a simple machine learning model (linear regression) trained on sample data.">?</span></h3>
+        <div style="color:#1976d2;font-size:1.05em;margin-bottom:0.7em;">
+          <strong>How it works:</strong> Enter a velocity value and click <b>Predict Drag</b>. The tool uses a simple machine learning (linear regression) model trained on sample data to estimate the drag force for the given velocity.
+        </div>
+        <form id="ml-form" aria-label="ML-based Drag Predictor" class="ml-calc-form">
+          <div class="ml-calc-row">
+            <label for="ml-velocity" class="ml-calc-label">Velocity (m/s):</label>
+            <input type="number" id="ml-velocity" required aria-required="true" aria-label="Velocity for ML prediction" class="ml-calc-input" autocomplete="off">
+          </div>
+          <div style="text-align:center;margin-top:1.1em;">
+            <button type="submit" class="animated-calc-btn ml-calc-btn">Predict Drag</button>
+          </div>
+        </form>
+        <div id="ml-result" style="margin-top:1em;"></div>
+        <canvas id="ml-chart" width="350" height="180" style="margin-top:1em;"></canvas>
+      </div>
+    </section>
+    <section id="quiz" class="section">
+      <h2>Quiz / Flashcards</h2>
+      <div class="card" id="flashcard-zone">
+        <div class="flashcard-grid" id="flashcard-grid"></div>
+      </div>
+    </section>
+    <section id="notes" class="section">
+      <h2>Study Notes & Downloads</h2>
+      <div style="margin-bottom:1.2em;">
+        <a href="assets/all_notes.zip" download class="notes-zip-btn"><span style="font-size:1.2em;">⬇️</span> Download All Notes (ZIP)</a>
+      </div>
+      <div class="notes-list">
+        <!-- Previous Question Papers -->
+        <div class="notes-card notes-collapsible">
+          <button class="notes-btn">📝 Previous Question Papers</button>
+          <div class="notes-content">
+            <div class="notes-actions">
+              <a href="assets/images/CIE1.jpg" download class="notes-download"><span>⬇️</span> Download CIE 1 (JPG)</a>
+              <button class="notes-view" data-img="assets/images/CIE1.jpg">👁️ View Inline</button>
+            </div>
+            <div class="notes-actions">
+              <a href="assets/images/CIE2.jpg" download class="notes-download"><span>⬇️</span> Download CIE 2 (JPG)</a>
+              <button class="notes-view" data-img="assets/images/CIE2.jpg">👁️ View Inline</button>
+            </div>
+            <div class="notes-viewer"></div>
+          </div>
+        </div>
+        <!-- Unit I -->
+        <div class="notes-card notes-collapsible">
+          <button class="notes-btn">📄 Unit I: Basics of Flight Vehicles</button>
+          <div class="notes-content">
+            <div class="notes-actions">
+              <a href="assets/Fundamentals of Aerospace Engg/Unit 1/Unit 1 Notes -Basics of Aerospace A5.pdf" download class="notes-download"><span>⬇️</span> Download (PDF - 558 KB)</a>
+              <button class="notes-view" data-pdf="assets/Fundamentals of Aerospace Engg/Unit 1/Unit 1 Notes -Basics of Aerospace A5.pdf">👁️ View Inline</button>
+            </div>
+            <div class="notes-actions">
+              <a href="assets/Fundamentals of Aerospace Engg/Unit 1/ISA Numericals.pdf" download class="notes-download"><span>⬇️</span> Download (PDF - 374 KB)</a>
+              <button class="notes-view" data-pdf="assets/Fundamentals of Aerospace Engg/Unit 1/ISA Numericals.pdf">👁️ View Inline</button>
+            </div>
+            <div class="notes-viewer"></div>
+          </div>
+        </div>
+        <!-- Unit II -->
+        <div class="notes-card notes-collapsible">
+          <button class="notes-btn">📄 Unit II: Aircraft Aerodynamics</button>
+          <div class="notes-content">
+            <div class="notes-actions">
+              <a href="assets/Fundamentals of Aerospace Engg/Unit 2/1-UNIT 2-Basics Aerodynamics-merged-merged.pdf" download class="notes-download"><span>⬇️</span> Download (PDF - 4.9 MB)</a>
+              <button class="notes-view" data-pdf="assets/Fundamentals of Aerospace Engg/Unit 2/1-UNIT 2-Basics Aerodynamics-merged-merged.pdf">👁️ View Inline</button>
+            </div>
+            <div class="notes-viewer"></div>
+          </div>
+        </div>
+        <!-- Unit III -->
+        <div class="notes-card notes-collapsible">
+          <button class="notes-btn">📄 Unit III: Propulsion & Space Mechanics</button>
+          <div class="notes-content">
+            <div class="notes-actions">
+              <a href="assets/Fundamentals of Aerospace Engg/Unit 3/Unit 3-Introduction to Rocket Propulsion.docx" download class="notes-download"><span>⬇️</span> Download (DOCX - 386 KB)</a>
+            </div>
+            <div class="notes-actions">
+              <a href="assets/Fundamentals of Aerospace Engg/Unit 3/Unit 3 Aircraft Propulsion Notes.docx" download class="notes-download"><span>⬇️</span> Download (DOCX - 3.9 MB)</a>
+            </div>
+            <div class="notes-viewer"></div>
+          </div>
+        </div>
+        <!-- Unit IV -->
+        <div class="notes-card notes-collapsible">
+          <button class="notes-btn">📄 Unit IV: Aerospace Structures</button>
+          <div class="notes-content">
+            <div class="notes-actions">
+              <a href="assets/Fundamentals of Aerospace Engg/Unit 4/Unit 4 Aircraft Structures.pdf" download class="notes-download"><span>⬇️</span> Download (PDF - 835 KB)</a>
+              <button class="notes-view" data-pdf="assets/Fundamentals of Aerospace Engg/Unit 4/Unit 4 Aircraft Structures.pdf">👁️ View Inline</button>
+            </div>
+            <div class="notes-viewer"></div>
+          </div>
+        </div>
+        <!-- Unit V -->
+        <div class="notes-card notes-collapsible">
+          <button class="notes-btn">📄 Unit V: Systems & Instruments</button>
+          <div class="notes-content">
+            <div class="notes-actions">
+              <a href="assets/Fundamentals of Aerospace Engg/Unit 5/Unit 5 Aircraft Instruments.pdf" download class="notes-download"><span>⬇️</span> Download (PDF - 365 KB)</a>
+              <button class="notes-view" data-pdf="assets/Fundamentals of Aerospace Engg/Unit 5/Unit 5 Aircraft Instruments.pdf">👁️ View Inline</button>
+            </div>
+            <div class="notes-viewer"></div>
+          </div>
+        </div>
+        <!-- Formulas Sheet -->
+        <div class="notes-card notes-collapsible">
+          <button class="notes-btn">🧮 Formulas Sheet (All Units)</button>
+          <div class="notes-content">
+            <div class="notes-actions">
+              <a href="assets/Fundamentals of Aerospace Engg/Formulas Sheet.pdf" download class="notes-download"><span>⬇️</span> Download (PDF)</a>
+              <button class="notes-view" data-pdf="assets/Fundamentals of Aerospace Engg/Formulas Sheet.pdf">👁️ View Inline</button>
+            </div>
+            <div class="notes-viewer"></div>
+          </div>
+        </div>
+        <!-- Textbooks -->
+        <div class="notes-card notes-collapsible">
+          <button class="notes-btn">📚 Textbooks</button>
+          <div class="notes-content">
+            <div class="notes-actions">
+              <a href="assets/Fundamentals of Aerospace Engg/TextBooks/introduction-to-flight-8th-edition-pdf-free.pdf" download class="notes-download"><span>⬇️</span> Download Introduction to Flight (8th Edition, Anderson)</a>
+              <button class="notes-view" data-pdf="assets/Fundamentals of Aerospace Engg/TextBooks/introduction-to-flight-8th-edition-pdf-free.pdf">👁️ View Inline</button>
+            </div>
+            <div class="notes-actions">
+              <a href="assets/Fundamentals of Aerospace Engg/TextBooks/George P. Sutton, Oscar Biblarz - Rocket Propulsion Elements (2010, Wiley) - libgen.li.pdf" download class="notes-download"><span>⬇️</span> Download Rocket Propulsion Elements (Sutton & Biblarz)</a>
+              <button class="notes-view" data-pdf="assets/Fundamentals of Aerospace Engg/TextBooks/George P. Sutton, Oscar Biblarz - Rocket Propulsion Elements (2010, Wiley) - libgen.li.pdf">👁️ View Inline</button>
+            </div>
+            <div class="notes-actions">
+              <a href="assets/Fundamentals of Aerospace Engg/TextBooks/Ian Moir, Allan Seabridge - Aircraft systems mechanical, electrical, and avionics subsystems integration, 3ed. (2008, John Wiley & Sons) - libgen.li.pdf" download class="notes-download"><span>⬇️</span> Download Aircraft Systems (Moir & Seabridge)</a>
+              <button class="notes-view" data-pdf="assets/Fundamentals of Aerospace Engg/TextBooks/Ian Moir, Allan Seabridge - Aircraft systems mechanical, electrical, and avionics subsystems integration, 3ed. (2008, John Wiley & Sons) - libgen.li.pdf">👁️ View Inline</button>
+            </div>
+            <div class="notes-actions">
+              <a href="assets/Fundamentals of Aerospace Engg/TextBooks/T.H.G. Megson - Introduction to Aircraft Structural Analysis (Elsevier Aerospace Engineering) (2010) - libgen.li.pdf" download class="notes-download"><span>⬇️</span> Download Introduction to Aircraft Structural Analysis (Megson)</a>
+              <button class="notes-view" data-pdf="assets/Fundamentals of Aerospace Engg/TextBooks/T.H.G. Megson - Introduction to Aircraft Structural Analysis (Elsevier Aerospace Engineering) (2010) - libgen.li.pdf">👁️ View Inline</button>
+            </div>
+            <div class="notes-actions">
+              <a href="assets/Fundamentals of Aerospace Engg/TextBooks/John D. Anderson Jr - Fundamentals of Aerodynamics (2011, McGraw-Hill Education) - libgen.li.pdf" download class="notes-download"><span>⬇️</span> Download Fundamentals of Aerodynamics (Anderson)</a>
+              <button class="notes-view" data-pdf="assets/Fundamentals of Aerospace Engg/TextBooks/John D. Anderson Jr - Fundamentals of Aerodynamics (2011, McGraw-Hill Education) - libgen.li.pdf">👁️ View Inline</button>
+            </div>
+            <div class="notes-viewer"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div>
+      &copy; 2025 AeroEdu &mdash; Built for AI/ML & Aerospace Students.<br>
+      <a href="#home">Home</a>|
+      <a href="#ai-tools">AI Tools</a>|
+      <a href="#quiz">Quiz</a>
+    </div>
+    <div style="font-size:0.95em; margin-top:0.5em; color:#1976d2;">Designed & coded by AeroEdu Team. All features work offline in a single file.</div>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    // Collapsible logic for unit cards
+    document.querySelectorAll('.collapsible').forEach(function(card) {
+      var btn = card.querySelector('.collapse-btn');
+      var content = card.querySelector('.collapse-content');
+      content.style.display = 'none';
+      btn.addEventListener('click', function() {
+        if (content.style.display === 'none') {
+          content.style.display = 'block';
+          btn.textContent = 'Hide Details';
+        } else {
+          content.style.display = 'none';
+          btn.textContent = 'Show Details';
+        }
+      });
+    });
+    // Smooth scroll for navbar
+    document.querySelectorAll('nav a').forEach(function(link) {
+      link.addEventListener('click', function(e) {
+        var targetId = this.getAttribute('href').slice(1);
+        var target = document.getElementById(targetId);
+        if (target) {
+          e.preventDefault();
+          window.scrollTo({
+            top: target.offsetTop - 60,
+            behavior: 'smooth'
+          });
+          document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+          this.classList.add('active');
+        }
+      });
+    });
+    // ISA Model Calculator
+    document.getElementById('isa-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const alt = parseFloat(document.getElementById('isa-altitude').value);
+      if (isNaN(alt) || alt < 0 || alt > 11000) {
+        document.getElementById('isa-result').innerHTML = '<span style="color:red">Enter altitude between 0 and 11,000 m.</span>';
+        return;
+      }
+      const T = 15.04 - 0.00649 * alt;
+      const P = 101.29 * Math.pow(((T + 273.1)/288.08), 5.256);
+      document.getElementById('isa-result').innerHTML =
+        `<b>Temperature:</b> ${T.toFixed(2)} °C<br><b>Pressure:</b> ${P.toFixed(2)} Pa`;
+    });
+    // Lift & Drag Calculator
+    document.getElementById('lift-drag-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const rho = parseFloat(document.getElementById('ld-density').value);
+      const V = parseFloat(document.getElementById('ld-velocity').value);
+      const S = parseFloat(document.getElementById('ld-area').value);
+      const Cl = parseFloat(document.getElementById('ld-cl').value);
+      const Cd = parseFloat(document.getElementById('ld-cd').value);
+      if ([rho, V, S, Cl, Cd].some(isNaN)) {
+        document.getElementById('lift-drag-result').innerHTML = '<span style="color:red">Fill all fields with valid numbers.</span>';
+        return;
+      }
+      const L = 0.5 * rho * V * V * S * Cl;
+      const D = 0.5 * rho * V * V * S * Cd;
+      document.getElementById('lift-drag-result').innerHTML =
+        `<b>Lift:</b> ${L.toFixed(2)} N<br><b>Drag:</b> ${D.toFixed(2)} N`;
+    });
+    // --- ML-based Drag Predictor (Polynomial Regression, Physics-based) ---
+    // Physics constants
+    const ML_CD = 0.3;
+    const ML_A = 2.0;
+    const ML_RHO = 1.225;
+    // Generate training data using drag formula: D = 0.5 * Cd * rho * A * v^2
+    const mlData = [];
+    for (let v = 0; v <= 100; v += 5) {
+      const drag = 0.5 * ML_CD * ML_RHO * ML_A * v * v;
+      mlData.push({ velocity: v, drag });
+    }
+    // Fit polynomial regression (degree 2): drag = a*v^2 + b*v + c
+    function poly2Fit(data) {
+      // Least squares for y = a*x^2 + b*x + c
+      let Sx = 0, Sx2 = 0, Sx3 = 0, Sx4 = 0, Sy = 0, Sxy = 0, Sx2y = 0, n = data.length;
+      for (const d of data) {
+        const x = d.velocity, y = d.drag, x2 = x*x;
+        Sx += x;
+        Sx2 += x2;
+        Sx3 += x2 * x;
+        Sx4 += x2 * x2;
+        Sy += y;
+        Sxy += x * y;
+        Sx2y += x2 * y;
+      }
+      // Solve normal equations
+      // | n    Sx    Sx2 |   | c |   | Sy   |
+      // | Sx   Sx2   Sx3 | * | b | = | Sxy  |
+      // | Sx2  Sx3   Sx4 |   | a |   | Sx2y |
+      const mat = [
+        [n, Sx, Sx2],
+        [Sx, Sx2, Sx3],
+        [Sx2, Sx3, Sx4]
+      ];
+      const vec = [Sy, Sxy, Sx2y];
+      // Gaussian elimination
+      function solve3x3(A, b) {
+        const m = JSON.parse(JSON.stringify(A));
+        const v = b.slice();
+        for (let i = 0; i < 3; i++) {
+          // Pivot
+          let maxRow = i;
+          for (let k = i+1; k < 3; k++) if (Math.abs(m[k][i]) > Math.abs(m[maxRow][i])) maxRow = k;
+          [m[i], m[maxRow]] = [m[maxRow], m[i]];
+          [v[i], v[maxRow]] = [v[maxRow], v[i]];
+          // Eliminate
+          for (let k = i+1; k < 3; k++) {
+            const c = m[k][i] / m[i][i];
+            for (let j = i; j < 3; j++) m[k][j] -= c * m[i][j];
+            v[k] -= c * v[i];
+          }
+        }
+        // Back-substitute
+        const x = [0,0,0];
+        for (let i = 2; i >= 0; i--) {
+          x[i] = v[i];
+          for (let j = i+1; j < 3; j++) x[i] -= m[i][j] * x[j];
+          x[i] /= m[i][i];
+        }
+        return x;
+      }
+      const [c, b, a] = solve3x3(mat, vec);
+      return { a, b, c };
+    }
+    const mlPoly = poly2Fit(mlData);
+    function predictDrag(v) {
+      return mlPoly.a * v * v + mlPoly.b * v + mlPoly.c;
+    }
+    // Chart.js chart
+    let mlChart;
+    function renderMLChart() {
+      const velocities = [];
+      const predicted = [];
+      for (let v = 0; v <= 100; v += 2) {
+        velocities.push(v);
+        predicted.push(predictDrag(v));
+      }
+      if (mlChart) mlChart.destroy();
+      mlChart = new Chart(document.getElementById('ml-chart').getContext('2d'), {
+        type: 'line',
+        data: {
+          labels: velocities,
+          datasets: [
+            {
+              label: 'Predicted Drag (N)',
+              data: predicted,
+              borderColor: '#1976d2',
+              backgroundColor: 'rgba(25,118,210,0.08)',
+              fill: true,
+              tension: 0.2,
+            },
+            {
+              label: 'Training Data',
+              data: mlData.map(d => ({x: d.velocity, y: d.drag})),
+              borderColor: '#ff9800',
+              backgroundColor: '#ffecb3',
+              fill: false,
+              type: 'scatter',
+              pointRadius: 5,
+              showLine: false,
+              parsing: false,
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: true },
+            title: { display: false }
+          },
+          scales: {
+            x: { title: { display: true, text: 'Velocity (m/s)' } },
+            y: { title: { display: true, text: 'Drag (N)' } }
+          }
+        }
+      });
+    }
+    renderMLChart();
+    // ML form logic
+    document.getElementById('ml-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const v = parseFloat(document.getElementById('ml-velocity').value);
+      if (isNaN(v)) {
+        document.getElementById('ml-result').innerHTML = '<span style="color:red">Enter a valid velocity.</span>';
+        return;
+      }
+      const pred = predictDrag(v);
+      document.getElementById('ml-result').innerHTML = `<b>Predicted Drag:</b> ${pred.toFixed(2)} N`;
+    });
+    // Flashcard Quiz Logic: Show all cards at once
+    (function() {
+      const flashcards = [
+        { term: "Lift", def: "The upward force that allows an aircraft to rise and stay in the air, generated by the wings as air flows over them." },
+        { term: "Drag", def: "The aerodynamic force that opposes an aircraft's motion through the air." },
+        { term: "Thrust", def: "The forward force produced by the aircraft's engines to propel it through the air." },
+        { term: "Fuselage", def: "The main body of an aircraft, housing the crew, passengers, and cargo." },
+        { term: "Empennage", def: "The tail assembly of an aircraft, providing stability and control." },
+        { term: "Airfoil", def: "A shape designed to produce lift when air flows over it, such as a wing or propeller blade." },
+        { term: "Stall", def: "A sudden loss of lift due to the wing exceeding its critical angle of attack." },
+        { term: "Avionics", def: "The electronic systems used on aircraft, including navigation, communication, and flight control." },
+        { term: "Altimeter", def: "An instrument that measures the altitude of the aircraft above sea level." },
+        { term: "Orbital Motion", def: "The curved path of a spacecraft or satellite as it moves around a planet or other body in space." }
+      ];
+      const grid = document.getElementById('flashcard-grid');
+      grid.innerHTML = flashcards.map(card => `
+        <div class="flashcard-static">
+          <div class="flashcard-term">${card.term}</div>
+          <div class="flashcard-def">${card.def}</div>
+        </div>
+      `).join('');
+    })();
+    // Accessibility: focus help-tips on tab
+    document.querySelectorAll('.help-tip').forEach(function(tip) {
+      tip.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          this.blur();
+        }
+      });
+    });
+    // Nested collapsible logic for unit topics
+    document.querySelectorAll('.topic-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        const parent = btn.parentElement;
+        parent.classList.toggle('active');
+      });
+    });
+    // Notes section collapsible logic and PDF/image viewer
+    document.querySelectorAll('.notes-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        const card = btn.closest('.notes-card');
+        card.classList.toggle('active');
+      });
+    });
+    document.querySelectorAll('.notes-view').forEach(function(viewBtn) {
+      viewBtn.addEventListener('click', function() {
+        const pdf = viewBtn.getAttribute('data-pdf');
+        const img = viewBtn.getAttribute('data-img');
+        const viewer = viewBtn.closest('.notes-content').querySelector('.notes-viewer');
+        if (pdf && pdf.toLowerCase().endsWith('.pdf')) {
+          viewer.innerHTML = `<iframe src='${pdf}' title='PDF Notes' allowfullscreen></iframe>`;
+        } else if (img && (img.toLowerCase().endsWith('.jpg') || img.toLowerCase().endsWith('.jpeg') || img.toLowerCase().endsWith('.png'))) {
+          viewer.innerHTML = `<img src='${img}' alt='Question Paper' style='max-width:100%;border-radius:8px;border:1.5px solid #b3d1ea;background:#fff;'>`;
+        }
+      });
+    });
+    // --- Time Spent on Site Dashboard ---
+    (function() {
+      const timerEl = document.getElementById('site-timer');
+      const resetBtn = document.getElementById('site-timer-reset');
+      const lastEl = document.getElementById('site-timer-last');
+      let seconds = 0;
+      // Restore from localStorage if available
+      if (localStorage.getItem('aeroedu_timer')) {
+        seconds = parseInt(localStorage.getItem('aeroedu_timer'), 10) || 0;
+      }
+      function formatTime(sec) {
+        const m = Math.floor(sec/60);
+        const s = sec%60;
+        return `⏱️ Time on site: ${m} min ${s} sec`;
+      }
+      function updateTimer() {
+        timerEl.textContent = formatTime(seconds);
+      }
+      let timerInterval = setInterval(function() {
+        seconds++;
+        updateTimer();
+        localStorage.setItem('aeroedu_timer', seconds);
+      }, 1000);
+      updateTimer();
+      // Show last session time if available
+      if (localStorage.getItem('aeroedu_last')) {
+        const last = parseInt(localStorage.getItem('aeroedu_last'), 10) || 0;
+        if (last > 0) {
+          const m = Math.floor(last/60), s = last%60;
+          lastEl.textContent = `Last session: ${m} min ${s} sec`;
+        }
+      }
+      // Save last session time on refresh (not on tab close)
+      window.addEventListener('beforeunload', function(e) {
+        localStorage.setItem('aeroedu_last', seconds);
+      });
+      // Reset button
+      resetBtn.onclick = function() {
+        seconds = 0;
+        updateTimer();
+        localStorage.setItem('aeroedu_timer', 0);
+      };
+    })();
+    // --- Time Dashboard Logic (Fixed) ---
+    document.addEventListener('DOMContentLoaded', function() {
+      (function() {
+        // Session timing
+        let sessionStart = Date.now();
+        let sessionSeconds = 0;
+        let sessionTimer = setInterval(function() {
+          sessionSeconds = Math.floor((Date.now() - sessionStart) / 1000);
+          updateCurrent();
+        }, 1000);
+        // Load previous sessions from localStorage
+        let sessions = [];
+        if (localStorage.getItem('aeroedu_sessions')) {
+          try {
+            sessions = JSON.parse(localStorage.getItem('aeroedu_sessions')) || [];
+          } catch(e) { sessions = []; }
+        }
+        // On refresh, store last session
+        window.addEventListener('beforeunload', function() {
+          if (sessionSeconds > 0) {
+            sessions.push(sessionSeconds);
+            localStorage.setItem('aeroedu_sessions', JSON.stringify(sessions));
+          }
+        });
+        // Chart.js setup
+        let chart;
+        function renderChart() {
+          const ctx = document.getElementById('timedash-chart').getContext('2d');
+          const labels = sessions.map((s, i) => `Session ${i+1}`);
+          const data = sessions.map(s => Math.floor(s/60) + (s%60)/60);
+          if (chart) chart.destroy();
+          chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: labels,
+              datasets: [{
+                label: 'Time on site (minutes)',
+                data: data,
+                backgroundColor: '#1976d2',
+                borderRadius: 7,
+                borderWidth: 1
+              }]
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                legend: { display: false },
+                title: { display: false }
+              },
+              scales: {
+                x: { title: { display: true, text: 'Session' } },
+                y: { title: { display: true, text: 'Minutes' }, beginAtZero: true }
+              }
+            }
+          });
+        }
+        function updateCurrent() {
+          document.getElementById('timedash-current').textContent = `⏱️ Current session: ${Math.floor(sessionSeconds/60)} min ${sessionSeconds%60} sec`;
+        }
+        // Reset all data
+        document.getElementById('timedash-reset').onclick = function() {
+          sessions = [];
+          sessionStart = Date.now();
+          sessionSeconds = 0;
+          localStorage.setItem('aeroedu_sessions', '[]');
+          renderChart();
+          updateCurrent();
+        };
+        // Always render chart on nav click or page load
+        function showChartOnNav() {
+          renderChart();
+          updateCurrent();
+        }
+        document.querySelector('a[href="#timedash"]').addEventListener('click', showChartOnNav);
+        // Also render on page load
+        showChartOnNav();
+      })();
+    });
+    // Dark theme toggle logic
+    const themeToggle = document.getElementById('theme-toggle');
+    function setTheme(dark) {
+      if (dark) {
+        document.body.classList.add('dark-theme');
+        themeToggle.textContent = '☀️';
+        localStorage.setItem('aeroedu_theme', 'dark');
+      } else {
+        document.body.classList.remove('dark-theme');
+        themeToggle.textContent = '🌙';
+        localStorage.setItem('aeroedu_theme', 'light');
+      }
+    }
+    themeToggle.addEventListener('click', function() {
+      setTheme(!document.body.classList.contains('dark-theme'));
+    });
+    // On load, set theme from localStorage
+    if (localStorage.getItem('aeroedu_theme') === 'dark') setTheme(true);
+    else setTheme(false);
+  </script>
+  <script defer src="https://app.fastbots.ai/embed.js" data-bot-id="cmcngv1mn0lv5n8lvc58keoih"></script>
+</body>
+</html> 

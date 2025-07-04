@@ -18,15 +18,6 @@
       --nav-bg: #f5fbff;
       --shadow: 0 2px 8px rgba(25, 118, 210, 0.08);
     }
-    body.dark-theme {
-      --main-bg: #181f2a;
-      --accent: #90caf9;
-      --card-bg: #232b3a;
-      --border: #394867;
-      --text: #e3eaf7;
-      --nav-bg: #232b3a;
-      --shadow: 0 2px 8px rgba(144,202,249,0.08);
-    }
     body {
       margin: 0;
       font-family: 'Segoe UI', Arial, sans-serif;
@@ -93,6 +84,7 @@
         justify-content: center;
         align-items: center;
         position: relative;
+        min-height: 56px;
       }
       .nav-links {
         flex-direction: column;
@@ -109,25 +101,50 @@
         border-bottom-left-radius: 10px;
         border-bottom-right-radius: 10px;
         transition: max-height 0.3s;
+        z-index: 10;
+        pointer-events: none;
       }
       .nav-links.open {
         max-height: 400px;
         padding: 0.7em 0.5em;
         z-index: 10;
+        pointer-events: auto;
       }
       .nav-links a {
         width: 100%;
         padding: 0.7em 0.5em;
         font-size: 1.1em;
       }
-      #theme-toggle {
-        right: 1.2rem;
-        top: 50%;
-        transform: translateY(-50%);
-        font-size: 1.3em;
-      }
       .hamburger {
         display: block;
+        position: absolute;
+        left: 1.2rem;
+        top: 0.7rem;
+        transform: none;
+        background: rgba(255,255,255,0.01);
+        border: none;
+        font-size: 2em;
+        color: var(--accent);
+        cursor: pointer;
+        z-index: 100;
+        height: 40px;
+        width: 40px;
+        padding: 0;
+        pointer-events: auto;
+      }
+    }
+    @media (max-width: 600px) {
+      nav {
+        gap: 0.5rem;
+        font-size: 0.98em;
+        min-height: 44px;
+      }
+      .hamburger {
+        left: 0.7rem;
+        top: 0.3rem;
+        font-size: 1.7em;
+        height: 36px;
+        width: 36px;
       }
     }
     nav a {
@@ -921,12 +938,11 @@
         <a href="#quiz">Quiz / Flashcards</a>
         <a href="#notes">Notes</a>
       </div>
-      <button id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
     </nav>
   </header>
   <main class="container">
     <section id="home" class="section">
-      <div class="prof-card">
+      <div class="prof-card" style="margin-bottom:1.2em; background: var(--accent); color: var(--card-bg);">
         This project is guided by Prof Pranesh Kumar
       </div>
       <div class="student-card">
@@ -937,37 +953,16 @@
           <div class="student-email"><a href="mailto:omkarbm.ai23@rvce.edu.in">omkarbm.ai23@rvce.edu.in</a></div>
         </div>
       </div>
-      <div class="card" style="margin-bottom:1em; background: linear-gradient(90deg, #e6f2fb 70%, #b3d1ea 100%);">
-        <h2 style="margin-top:0; color:#1976d2;">Project Introduction</h2>
+      <div class="card" style="margin-bottom:1em; background: var(--card-bg);">
+        <h2 style="margin-top:0; color: var(--accent);">Project Introduction</h2>
       </div>
-      <div class="card project-card" style="margin-bottom:1em;">
-        <h3 style="color:#1976d2;">Project Title</h3>
-        <div style="font-size:1.15em; font-weight:600; color:#1256a3;">AeroEdu – Learn Aerospace Basics</div>
+      <div class="card project-card" style="margin-bottom:1em; background: var(--card-bg); color: var(--text);">
+        <h3 style="color: var(--accent);">Project Title</h3>
+        <div style="font-size:1.15em; font-weight:600; color: var(--accent);">AeroEdu – Learn Aerospace Basics</div>
         <p style="margin-top:0.7em;">AeroEdu is an innovative educational platform designed to make aerospace engineering accessible, interactive, and engaging for students and enthusiasts. The project brings together essential concepts, tools, and resources in a single, user-friendly portal.</p>
       </div>
-      <div class="card project-card" style="margin-bottom:1em;">
-        <h3 style="color:#1976d2;">Goal</h3>
-        <p style="font-size:1.08em;">To develop a comprehensive, interactive, and offline-capable website that empowers users to learn the fundamentals of aerospace engineering. AeroEdu integrates calculators, flashcards, AI tools, and downloadable notes to support both classroom and self-paced learning.</p>
-        <ul style="margin-top:0.7em;">
-          <li><b>Comprehensive Coverage:</b> All major aerospace topics are included, from flight vehicles to advanced systems.</li>
-          <li><b>Interactivity:</b> Users can engage with calculators, quizzes, and visual diagrams for hands-on learning.</li>
-          <li><b>AI Integration:</b> Smart tools and a Q&A chatbot enhance understanding and provide instant support.</li>
-          <li><b>Offline Access:</b> The platform is designed to work seamlessly even without internet connectivity.</li>
-          <li><b>Resource Hub:</b> Downloadable notes and exam materials are available for thorough preparation.</li>
-        </ul>
-      </div>
-      <div class="card project-card" style="margin-bottom:1em;">
-        <h3 style="color:#1976d2;">Objectives</h3>
-        <ul style="font-size:1.08em;">
-          <li><b>Structured Content:</b> Deliver clear, well-organized modules on flight vehicles, aerodynamics, propulsion, structures, systems, and instruments.</li>
-          <li><b>Interactive Learning:</b> Provide calculators for real-time problem solving, quizzes for self-assessment, and visual diagrams for conceptual clarity.</li>
-          <li><b>AI-Powered Tools:</b> Integrate a Q&A chatbot and smart calculators to answer questions and assist with complex topics.</li>
-          <li><b>Offline Usability:</b> Ensure the website is fully functional without internet, supporting learning anytime, anywhere.</li>
-          <li><b>Exam Preparation:</b> Offer downloadable notes, previous question papers, and a comprehensive formulas sheet for revision and practice.</li>
-        </ul>
-      </div>
-      <div class="card project-card" style="margin-bottom:1.5em;">
-        <h3 style="color:#1976d2;">Problem Statement</h3>
+      <div class="card project-card" style="margin-bottom:1.5em; background: var(--card-bg); color: var(--text);">
+        <h3 style="color: var(--accent);">Problem Statement</h3>
         <p style="font-size:1.08em;">Many students and enthusiasts face challenges in accessing a unified, interactive, and offline-friendly resource for aerospace engineering basics. Existing materials are often scattered, require constant internet access, or lack engaging features. AeroEdu addresses these issues by providing:</p>
         <ul style="font-size:1.08em;">
           <li><b>Unified Platform:</b> All essential aerospace topics and tools in one place.</li>
@@ -1926,37 +1921,31 @@
         showChartOnNav();
       })();
     });
-    // Dark theme toggle logic
-    const themeToggle = document.getElementById('theme-toggle');
-    function setTheme(dark) {
-      if (dark) {
-        document.body.classList.add('dark-theme');
-        themeToggle.textContent = '☀️';
-        localStorage.setItem('aeroedu_theme', 'dark');
-      } else {
-        document.body.classList.remove('dark-theme');
-        themeToggle.textContent = '🌙';
-        localStorage.setItem('aeroedu_theme', 'light');
-      }
-    }
-    themeToggle.addEventListener('click', function() {
-      setTheme(!document.body.classList.contains('dark-theme'));
-    });
-    // On load, set theme from localStorage
-    if (localStorage.getItem('aeroedu_theme') === 'dark') setTheme(true);
-    else setTheme(false);
     // Hamburger menu logic for mobile nav
     const hamburger = document.getElementById('hamburger');
     const navLinks = document.getElementById('nav-links');
-    hamburger.addEventListener('click', function() {
-      navLinks.classList.toggle('open');
-    });
-    // Close nav on link click (mobile)
-    navLinks.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', () => {
-        if (window.innerWidth <= 700) navLinks.classList.remove('open');
+    if (hamburger && navLinks) {
+      function toggleNavLinks(e) {
+        e.stopPropagation();
+        navLinks.classList.toggle('open');
+      }
+      hamburger.addEventListener('click', toggleNavLinks);
+      hamburger.addEventListener('touchstart', toggleNavLinks);
+      // Close nav on link click (mobile)
+      navLinks.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          if (window.innerWidth <= 700) navLinks.classList.remove('open');
+        });
       });
-    });
+      // Optional: close nav if clicking outside
+      document.addEventListener('click', function(e) {
+        if (window.innerWidth <= 700 && navLinks.classList.contains('open')) {
+          if (!navLinks.contains(e.target) && e.target !== hamburger) {
+            navLinks.classList.remove('open');
+          }
+        }
+      });
+    }
   </script>
   <script defer src="https://app.fastbots.ai/embed.js" data-bot-id="cmcngv1mn0lv5n8lvc58keoih"></script>
 </body>
